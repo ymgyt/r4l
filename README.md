@@ -1,7 +1,10 @@
 # Nix development environment for Rust-for-Linux
 
 ```sh
-nix develop -c $env.SHELL github:ymgyt/r4l
+nix develop github:ymgyt/r4l -c $env.SHELL
+git clone https://github.com/Rust-for-Linux/linux.git r4l-linux
+cd r4l-linux
+make LLVM=1 rustavailable
 ```
 
 ## References
