@@ -10,21 +10,36 @@
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
-      rustLibSrc = pkgs.rust.packages.stable.rustPlatform.rustLibSrc;
+      llvm = pkgs.llvmPackages_19;
     in
     {
       devShells.${system}.default = pkgs.mkShell {
         nativeBuildInputs = with pkgs; [
-          rustc
-          rust-bindgen
-          rustfmt
-          clippy
+
+          # LLVM
+          llvm.clang
+          llvm.libclang.lib
+
+          # Kernel build deps
+          elfutils
+          ncurses
+          pkg-config
+          bison
+          flex
+          bc
         ];
         shellHook = ''
-          echo "RUST_LIB_SRC = ${rustLibSrc}"
+          echo "libclang = ${llvm.libclang.lib}"
+          export LIBCLANG_PATH=${llvm.libclang.lib}/lib
+          export LD_LIBRARY_PATH=${llvm.libclang.lib}/lib:$${LD_LIBRARY_PATH:-}
+          export WERROR=0
+          export EXTRA_AFLAGS="-Wno-error=unused-command-line-argument"
+
+          export LLVM_IAS=0
         '';
 
-        RUST_LIB_SRC = "${rustLibSrc}";
+        HOSTCFLAGS = "-Wno-error=unused-command-line-argument";
+        KCFLAGS = "-Wno-error=unused-command-line-argument -Wno-error=address-of-packed-member";
       };
     };
 }
