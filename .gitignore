@@ -1,1 +1,10 @@
 .direnv/
+
+# kernel modules
+modules/**/*.o
+modules/**/*.ko
+modules/**/*.c
+modules/**/*.mod
+modules/**/*.cmd
+modules/**/modules.order
+modules/**/Module.symvers
